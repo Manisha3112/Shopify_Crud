@@ -5,36 +5,36 @@ class Crud{
 
     constructor(scopes,appUrl,shopifyApiPublicKey,shopifyApiSecretKey) {
         this.scopes = "read_products, write_products,read_product_listings,read_customers, write_customers,read_orders, write_orders";
-        this.appUrl = 'https://5a7c4ddb0b97.ngrok.io';
+        this.appUrl = 'https://cbf8a1753e2a.ngrok.io';
         this.shopifyApiPublicKey = process.env.SHOPIFY_API_PUBLIC_KEY;
         this.shopifyApiSecretKey = process.env.SHOPIFY_API_SECRET_KEY;
     }
 
-    buildRedirectUri () {
+    redirectUri () {
         return `${this.appUrl}/shopify/callback`;
     }
     
-    buildInstallUrl(shop, state, redirectUri) {
+    installUrl(shop, state, redirectUri) {
         return `https://${shop}/admin/oauth/authorize?client_id=${this.shopifyApiPublicKey}&scope=${this.scopes}&state=${state}&redirect_uri=${redirectUri}`;
     }
 
-    buildAccessTokenRequestUrl(shop){
+    accessRequestUrl(shop){
         return `https://${shop}/admin/oauth/access_token`;
     }
 
-    buildShopDataRequestUrl(shop){
+    shopRequestUrl(shop){
         return `https://${shop}/admin/shop.json`;
     }
 
-    buildProductDataRequestUrl(shop){
+    productRequestUrl(shop){
         return `https://${shop}/admin/api/2021-07/products.json`;
     }
 
-    buildProductAddRequestUrl(shop){
+    addRequestUrl(shop){
         return `https://${shop}/admin/api/2021-07/products.json`
     }
     
-    buildProductUpdateRequestUrl(shop,productId){
+    updateRequestUrl(shop,productId){
         return `https://${shop}/admin/api/2021-07/products/${productId}.json`
     }
 
@@ -42,19 +42,19 @@ class Crud{
         return crypto.createHmac('sha256', this.shopifyApiSecretKey).update(params).digest('hex');
     }
 
-    async fetchAccessToken (shop, data) {return await axios(this.buildAccessTokenRequestUrl(shop), {
+    async fetchAccessToken (shop, data) {return await axios(this.accessRequestUrl(shop), {
         method: 'POST',
         data
     });}
 
-    async fetchShopData (shop, accessToken) {return await axios(this.buildShopDataRequestUrl(shop), {
+    async fetchShopData (shop, accessToken) {return await axios(this.shopRequestUrl(shop), {
         method: 'GET',
         headers: {
             'X-Shopify-Access-Token': accessToken
         }
     });}
 
-    async getProducts (shop, accessToken) {return await axios(this.buildProductDataRequestUrl(shop), {
+    async getProducts (shop, accessToken) {return await axios(this.productRequestUrl(shop), {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json' ,
@@ -62,7 +62,7 @@ class Crud{
         }
     });}
 
-    async insertProduct (shop,data,accessToken) {return await axios(this.buildProductAddRequestUrl(shop), {
+    async insertProduct (shop,data,accessToken) {return await axios(this.addRequestUrl(shop), {
         method: 'POST',
         headers: {
             'X-Shopify-Access-Token': accessToken
@@ -73,7 +73,7 @@ class Crud{
 
     });}
 
-    async updateProduct (shop, productId,data, accessToken) {return await axios(this.buildProductUpdateRequestUrl(shop,productId), {
+    async updateProduct (shop, productId,data, accessToken) {return await axios(this.updateRequestUrl(shop,productId), {
         method:'PUT',
         headers: {
             'X-Shopify-Access-Token': accessToken
@@ -83,7 +83,7 @@ class Crud{
         }
     });}
 
-    async deleteProduct (shop, productId, accessToken) {return await axios(this.buildProductUpdateRequestUrl(shop,productId), {
+    async deleteProduct (shop, productId, accessToken) {return await axios(this.updateRequestUrl(shop,productId), {
         method:'DELETE',
         headers: {
             'X-Shopify-Access-Token': accessToken

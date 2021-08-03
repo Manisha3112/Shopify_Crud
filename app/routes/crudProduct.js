@@ -11,13 +11,13 @@ router.use(express.json());
 const shopifyApiPublicKey = process.env.SHOPIFY_API_PUBLIC_KEY;
 const shopifyApiSecretKey = process.env.SHOPIFY_API_SECRET_KEY;
 const scopes = "read_products, write_products,read_product_listings,read_customers, write_customers,read_orders, write_orders";
-const appUrl = 'https://5a7c4ddb0b97.ngrok.io';
+const appUrl = 'https://cbf8a1753e2a.ngrok.io';
 
 router.route('/shopify').get( async (req, res) => {
     const shop = req.query.shop;
     if (!shop) { return res.status(400).send({"Error":"400"})}
     const state = nonce();
-    const installShopUrl = Crud.buildInstallUrl(shop, state, Crud.buildRedirectUri())
+    const installShopUrl = Crud.installUrl(shop, state, Crud.redirectUri())
     res.cookie('state', state)
     res.redirect(installShopUrl);
 });
