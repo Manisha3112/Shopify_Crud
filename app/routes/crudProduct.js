@@ -1,3 +1,4 @@
+//https://6297a12e162b.ngrok.io/shopify?shop=Trail121212.myshopify.com
 const dotenv = require('dotenv').config();
 const Crud = require('../services/crudProduct');
 const express = require('express');
@@ -7,12 +8,10 @@ const querystring = require('querystring');
 var router = express.Router();
 const MongoClient = require('mongodb').MongoClient;
 router.use(express.json());
-
 const shopifyApiPublicKey = process.env.SHOPIFY_API_PUBLIC_KEY;
 const shopifyApiSecretKey = process.env.SHOPIFY_API_SECRET_KEY;
 const scopes = "read_products, write_products,read_product_listings,read_customers, write_customers,read_orders, write_orders";
-const appUrl = 'https://cbf8a1753e2a.ngrok.io';
-
+const appUrl = 'https://6297a12e162b.ngrok.io';
 router.route('/shopify').get( async (req, res) => {
     const shop = req.query.shop;
     if (!shop) { return res.status(400).send({"Error":"400"})}
@@ -54,7 +53,7 @@ router.route('/shopify/callback').get( async (req, res) => {
                 db.close();
             })
         })
-        res.status(200).send({"data":"Finally access token is generated "})
+        res.status(200).send({message:"Finally access token is generated "})
     } catch(err) {
         console.log(err)
         res.status(500).send("Error message: "+err)
@@ -86,10 +85,21 @@ router.route('/products').get( async (req,res) => {
         res.status(500).send("Error message: "+err)
     }
 })
+.delete(async (req,res) => {
+    try{
+        const shop = req.query.shop;
+        const productId = req.query.id;
+        const deleteProductData = await Crud.deleteProduct(shop, productId, process.env.SHOPIFY_ACCESS_TOKEN)
+        console.log("Products deleted successfuly")
+        res.status(200).send({message:"Products deleted successfuly",status:200})
+    }catch(err) {
+        console.log(err)
+        res.status(500).send("Error message: "+err)
+    }
+})
 .post(async (req,res) => {
     try {
         const shop = req.query.shop;
-        console.log(req.body)
         const data = req.body;
         const addProductData = await Crud.insertProduct(shop,data, process.env.SHOPIFY_ACCESS_TOKEN)
         console.log("Products inserted successfuly")
@@ -113,17 +123,4 @@ router.route('/products').get( async (req,res) => {
         res.status(500).send("Error message: "+err)
     }
 })
-.delete(async (req,res) => {
-    try{
-        const shop = req.query.shop;
-        const productId = req.query.id;
-        const deleteProductData = await Crud.deleteProduct(shop, productId, process.env.SHOPIFY_ACCESS_TOKEN)
-        console.log("Products deleted successfuly")
-        res.status(200).send({message:"Products deleted successfuly",status:200})
-    }catch(err) {
-        console.log(err)
-        res.status(500).send("Error message: "+err)
-    }
-})
-
 module.exports = router;
