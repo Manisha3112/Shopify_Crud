@@ -1,3 +1,8 @@
+// fetching accesstoken
+// https://6297a12e162b.ngrok.io/shopify?shop=Trail121212.myshopify.com
+// get products
+//https://6297a12e162b.ngrok.io/products?shop=Trail121212.myshopify.com
+
 const crypto = require('crypto');
 const axios = require('axios');
 
